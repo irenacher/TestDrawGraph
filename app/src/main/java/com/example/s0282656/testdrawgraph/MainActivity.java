@@ -5,12 +5,17 @@ import android.support.v7.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
+    GraphBackgroundView backgroundView;
+    GraphView graphView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        GraphView gv = findViewById(R.id.graphview);
+        graphView = findViewById(R.id.graphview);
+        backgroundView = findViewById(R.id.graphview_bg);
+
 
     }
 }

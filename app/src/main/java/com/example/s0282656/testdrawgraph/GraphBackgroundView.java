@@ -16,32 +16,49 @@ import java.util.Arrays;
  */
 public class GraphBackgroundView extends View {
 
-    static final int[] graphPoints1 = new int[]{ 100, 200, 300, 150, 400, 500, 800, 600 };
-    static final int[] graphPoints2 = new int[]{  150, 400 };
+//    static final float[] graphPoints1 = new float[]{  150, 500 };
+//    static final float[] graphPoints11 = new float[]{  15, 40 };
+//    static final float[] graphPoints111 = new float[]{  1.5f, 4.0f };
+//
+//    static final int[] graphPoints2 = new int[]{ 100, 200, 300, 400 };
+//    static final int[] graphPoints3 = new int[]{ 100, 50, 150, 200, 300, 600, 350 };
+//    static final int[] graphPoints4 = new int[]{ 100, 200, 300, 150, 400, 500, 800, 600 };
+//    static final int[] graphPoints5 = new int[]{ 100, 200, 300, 150, 400, 500, 800, 600 };
 
-    static final int rangeMinimum = 350;
-    static final int rangeMaximum = 650;
 
-    int[] graphPoints = null;
+    static final float rangeMinimum1 = 350;
+    static final float rangeMaximum1 = 650;
+
+    static final float rangeMinimum2 = 25;
+    static final float rangeMaximum2 = 60;
+
+//    float[] graphPoints = null;
+    float rangeMinimum;
+    float rangeMaximum;
+
 
     public GraphBackgroundView(Context context) {
         super(context);
-        graphPoints = Arrays.copyOf(graphPoints1, graphPoints1.length);
-//        graphPoints = Arrays.copyOf(graphPoints2, graphPoints2.length);
-
+        init();
     }
 
     public GraphBackgroundView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        graphPoints = Arrays.copyOf(graphPoints1, graphPoints1.length);
-//        graphPoints = Arrays.copyOf(graphPoints2, graphPoints2.length);
-
+        init();
     }
 
     public GraphBackgroundView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        graphPoints = Arrays.copyOf(graphPoints1, graphPoints1.length);
-//        graphPoints = Arrays.copyOf(graphPoints2, graphPoints2.length);
+        init();
+    }
+
+    private void init(){
+
+        rangeMinimum = rangeMinimum1;
+        rangeMaximum = rangeMaximum1;
+
+//        rangeMinimum = rangeMinimum2;
+//        rangeMaximum = rangeMaximum2;
     }
 
     @Override
@@ -54,15 +71,15 @@ public class GraphBackgroundView extends View {
         drawAxis(canvas,offsetX, offsetY );
 
         // 2. get max value
-        int maxVal = graphPoints[0];
-        for(int i = 1; i < graphPoints.length; i++){
-            if(graphPoints[i] > maxVal){
-                maxVal = graphPoints[i];
-            }
-        }
+//        float maxVal = graphPoints[0];
+//        for(int i = 1; i < graphPoints.length; i++){
+//            if(graphPoints[i] > maxVal){
+//                maxVal = graphPoints[i];
+//            }
+//        }
 
+        float maxVal = rangeMaximum * 1.5f;
         drawRangeNumbers(canvas, maxVal, offsetX, offsetY);
-
     }
 
     private void drawAxis(Canvas canvas,float offsetX, float offsetY ){
@@ -79,7 +96,6 @@ public class GraphBackgroundView extends View {
         pathY.lineTo(offsetX, getHeight() - offsetY);
         canvas.drawPath(pathY, axisPaint);
 
-//        pathX.moveTo(getWidth()*0.15f, getHeight()*0.9f);
         pathX.moveTo(offsetX, getHeight() - offsetY);
         pathX.lineTo(getWidth() - offsetX, getHeight() - offsetY);
         canvas.drawPath(pathX, axisPaint);
@@ -89,7 +105,8 @@ public class GraphBackgroundView extends View {
 
     private void drawRangeNumbers(Canvas canvas, float maxval, float offsetX, float offsetY){
 
-        float graphHeight = getHeight() - 2*offsetY;
+        float graphHeight = getHeight()*0.9f - 2*offsetY; // point values range
+
 
         Paint textPaint = new Paint();
         textPaint.setStyle(Paint.Style.FILL_AND_STROKE);
