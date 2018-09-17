@@ -101,13 +101,10 @@ public class GraphView extends View {
         float radius = 25;
         int resultsNum = graphPoints.length;
 
-//        float minRangeNumber_Y = graphHeight - (graphHeight/maxval*rangeMinimum - 2*offsetY);
-//        float maxRangeNumber_Y = graphHeight - (graphHeight/maxval*rangeMaximum - 2*offsetY);
-
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
         paint.setAntiAlias(true);
-        paint.setStrokeWidth(5);
+        paint.setStrokeWidth(10);
 
         for(int count = 0; count < graphPoints.length; count++){
 
@@ -149,14 +146,14 @@ public class GraphView extends View {
                     type = PathRangeType.BothOutOfRangeDifferentSidesDescending;
                 }
 
-                drawLine(prevCircleCenterX, prevCircleCenterY, pointX, pointY, radius, type, canvas);
+                calculateAnddrawLine(prevCircleCenterX, prevCircleCenterY, pointX, pointY, radius, type, canvas);
                 prevCircleCenterX = pointX;
                 prevCircleCenterY = pointY;
             }
         }
     }
 
-    private void drawLine(float fromX, float fromY, float toX, float toY, float radius, PathRangeType type, Canvas canvas ) {
+    private void calculateAnddrawLine(float fromX, float fromY, float toX, float toY, float radius, PathRangeType type, Canvas canvas ) {
         float deltaX = toX - fromX;
         float deltaY = toY - fromY;
         double fromY_start = 0, fromX_start = 0;
@@ -193,165 +190,93 @@ public class GraphView extends View {
         outOfRangePaint.setStyle(Paint.Style.STROKE);
         outOfRangePaint.setAntiAlias(true);
         outOfRangePaint.setColor(Color.parseColor("#8c1515"));
-        outOfRangePaint.setStrokeWidth(5);
+        outOfRangePaint.setStrokeWidth(10);
 
         Paint inRangePaint = new Paint();
         inRangePaint.setStyle(Paint.Style.STROKE);
         inRangePaint.setAntiAlias(true);
         inRangePaint.setColor(Color.BLACK);
-        inRangePaint.setStrokeWidth(5);
+        inRangePaint.setStrokeWidth(10);
 
         float maxval = rangeMaximum * 1.5f;
         float minRangeNumber_Y =  (graphHeight/maxval)*rangeMinimum + offsetY;
         float maxRangeNumber_Y = (graphHeight/maxval)*rangeMaximum + offsetY;
 
-        Path path;
-        double m = 0, b = 0;
+        double slope = (toY_end - fromY_start)/(toX_end - fromX_start);
+        double intercept = fromY_start - slope*fromX_start;
 
         switch (type) {
             case BothOutOfRangeSameSide:
-                path = new Path();
-                path.moveTo((float) fromX_start, (float) fromY_start);
-                path.lineTo((float) toX_end, (float) toY_end);
-                canvas.drawPath(path, outOfRangePaint);
+                drawLine((float) fromX_start, (float) fromY_start, (float) toX_end, (float) toY_end, outOfRangePaint, canvas);
                 break;
             case BothInRange:
-                path = new Path();
-                path.moveTo((float) fromX_start, (float) fromY_start);
-                path.lineTo((float) toX_end, (float) toY_end);
-                canvas.drawPath(path, inRangePaint);
+                drawLine((float) fromX_start, (float) fromY_start, (float) toX_end, (float) toY_end, inRangePaint, canvas);
                 break;
-
-            case FirstOutSecondInAscending: // #1, works!
-
-                m = (toY_end - fromY_start)/(toX_end - fromX_start);
-                b = fromY_start - m*fromX_start;
+            case FirstOutSecondInAscending: // #1
 
                 midPoint_Y1 = minRangeNumber_Y;
-                midPoint_X1 = (midPoint_Y1 - b)/m;
+                midPoint_X1 = (midPoint_Y1 - intercept)/slope;
 
-                path = new Path();
-                path.moveTo((float) fromX_start, (float) fromY_start);
-                path.lineTo((float) midPoint_X1, (float) midPoint_Y1);
-                canvas.drawPath(path, outOfRangePaint);
-
-                path = new Path();
-                path.moveTo((float) midPoint_X1, (float) midPoint_Y1);
-                path.lineTo((float) toX_end, (float) toY_end);
-                canvas.drawPath(path, inRangePaint);
-
+                drawLine((float) fromX_start, (float) fromY_start, (float) midPoint_X1, (float) midPoint_Y1, outOfRangePaint, canvas);
+                drawLine((float) midPoint_X1, (float) midPoint_Y1, (float) toX_end, (float) toY_end, inRangePaint, canvas);
                 break;
-
-            case FirstInSecondOutDescending: //#5, works!
-                m = (toY_end - fromY_start)/(toX_end - fromX_start);
-                b = fromY_start - m*fromX_start;
+            case FirstInSecondOutDescending: //#5
 
                 midPoint_Y1 = minRangeNumber_Y;
-                midPoint_X1 = (midPoint_Y1 - b)/m;
+                midPoint_X1 = (midPoint_Y1 - intercept)/slope;
 
-                path = new Path();
-                path.moveTo((float) fromX_start, (float) fromY_start);
-                path.lineTo((float) midPoint_X1, (float) midPoint_Y1);
-                canvas.drawPath(path, inRangePaint);
-
-                path = new Path();
-                path.moveTo((float) midPoint_X1, (float) midPoint_Y1);
-                path.lineTo((float) toX_end, (float) toY_end);
-                canvas.drawPath(path, outOfRangePaint);
-
+                drawLine((float) fromX_start, (float) fromY_start, (float) midPoint_X1, (float) midPoint_Y1, inRangePaint, canvas);
+                drawLine((float) midPoint_X1, (float) midPoint_Y1, (float) toX_end, (float) toY_end, outOfRangePaint, canvas);
                 break;
+            case FirstInSecondOutAscending: // #2
 
-            case FirstInSecondOutAscending: // #2, works!
-
-
-                m = (toY_end - fromY_start)/(toX_end - fromX_start);
-                b = fromY_start - m*fromX_start;
                 midPoint_Y1 = maxRangeNumber_Y;
-                midPoint_X1 = (midPoint_Y1 - b)/m;
+                midPoint_X1 = (midPoint_Y1 - intercept)/slope;
 
-                path = new Path();
-                path.moveTo((float) fromX_start, (float) fromY_start);
-                path.lineTo((float) midPoint_X1, (float) midPoint_Y1);
-                canvas.drawPath(path, inRangePaint);
-
-                path = new Path();
-                path.moveTo((float) midPoint_X1, (float) midPoint_Y1);
-                path.lineTo((float) toX_end, (float) toY_end);
-                canvas.drawPath(path, outOfRangePaint);
+                drawLine((float) fromX_start, (float) fromY_start, (float) midPoint_X1, (float) midPoint_Y1, inRangePaint, canvas);
+                drawLine((float) midPoint_X1, (float) midPoint_Y1, (float) toX_end, (float) toY_end, outOfRangePaint, canvas);
                 break;
-            case FirstOutSecondInDescending: // #4, works!
+            case FirstOutSecondInDescending: // #4
 
-                m = (toY_end - fromY_start)/(toX_end - fromX_start);
-                b = fromY_start - m*fromX_start;
                 midPoint_Y1 = maxRangeNumber_Y;
-                midPoint_X1 = (midPoint_Y1 - b)/m;
+                midPoint_X1 = (midPoint_Y1 - intercept)/slope;
 
-                path = new Path();
-                path.moveTo((float) fromX_start, (float) fromY_start);
-                path.lineTo((float) midPoint_X1, (float) midPoint_Y1);
-                canvas.drawPath(path, outOfRangePaint);
-
-                path = new Path();
-                path.moveTo((float) midPoint_X1, (float) midPoint_Y1);
-                path.lineTo((float) toX_end, (float) toY_end);
-                canvas.drawPath(path, inRangePaint);
+                drawLine((float) fromX_start, (float) fromY_start, (float) midPoint_X1, (float) midPoint_Y1, outOfRangePaint, canvas);
+                drawLine((float) midPoint_X1, (float) midPoint_Y1, (float) toX_end, (float) toY_end, inRangePaint, canvas);
                 break;
-            case BothOutOfRangeDifferentSidesAscending:
-                m = (toY_end - fromY_start)/(toX_end - fromX_start);
-                b = fromY_start - m*fromX_start;
+            case BothOutOfRangeDifferentSidesAscending: // #3
+
                 midPoint_Y1 = minRangeNumber_Y;
-                midPoint_X1 = (midPoint_Y1 - b)/m;
+                midPoint_X1 = (midPoint_Y1 - intercept)/slope;
 
                 midPoint_Y2 = maxRangeNumber_Y;
-                midPoint_X2 = (midPoint_Y2 - b)/m;
+                midPoint_X2 = (midPoint_Y2 - intercept)/slope;
 
-                path = new Path();
-                path.moveTo((float) fromX_start, (float) fromY_start);
-                path.lineTo((float) midPoint_X1, (float) midPoint_Y1);
-                canvas.drawPath(path, outOfRangePaint);
-
-                path = new Path();
-                path.moveTo((float) midPoint_X1, (float) midPoint_Y1);
-                path.lineTo((float) midPoint_X2, (float) midPoint_Y2);
-                canvas.drawPath(path, inRangePaint);
-
-                path = new Path();
-                path.moveTo((float) midPoint_X2, (float) midPoint_Y2);
-                path.lineTo((float) toX_end, (float) toY_end);
-                canvas.drawPath(path, outOfRangePaint);
+                drawLine((float) fromX_start, (float) fromY_start, (float) midPoint_X1, (float) midPoint_Y1, outOfRangePaint, canvas);
+                drawLine((float) midPoint_X1, (float) midPoint_Y1, (float) midPoint_X2, (float) midPoint_Y2, inRangePaint, canvas);
+                drawLine((float) midPoint_X2, (float) midPoint_Y2, (float) toX_end, (float) toY_end, outOfRangePaint, canvas);
                 break;
-
-            case BothOutOfRangeDifferentSidesDescending:
-                m = (toY_end - fromY_start)/(toX_end - fromX_start);
-                b = fromY_start - m*fromX_start;
-
+            case BothOutOfRangeDifferentSidesDescending: // #6
 
                 midPoint_Y1 = maxRangeNumber_Y;
-                midPoint_X1 = (midPoint_Y1 - b)/m;
+                midPoint_X1 = (midPoint_Y1 - intercept)/slope;
 
                 midPoint_Y2 = minRangeNumber_Y;
-                midPoint_X2 = (midPoint_Y2 - b)/m;
+                midPoint_X2 = (midPoint_Y2 - intercept)/slope;
 
-                path = new Path();
-                path.moveTo((float) fromX_start, (float) fromY_start);
-                path.lineTo((float) midPoint_X1, (float) midPoint_Y1);
-                canvas.drawPath(path, outOfRangePaint);
-
-                path = new Path();
-                path.moveTo((float) midPoint_X1, (float) midPoint_Y1);
-                path.lineTo((float) midPoint_X2, (float) midPoint_Y2);
-                canvas.drawPath(path, inRangePaint);
-
-                path = new Path();
-                path.moveTo((float) midPoint_X2, (float) midPoint_Y2);
-                path.lineTo((float) toX_end, (float) toY_end);
-                canvas.drawPath(path, outOfRangePaint);
-
+                drawLine((float) fromX_start, (float) fromY_start, (float) midPoint_X1, (float) midPoint_Y1, outOfRangePaint, canvas);
+                drawLine((float) midPoint_X1, (float) midPoint_Y1, (float) midPoint_X2, (float) midPoint_Y2, inRangePaint, canvas);
+                drawLine((float) midPoint_X2, (float) midPoint_Y2, (float) toX_end, (float) toY_end, outOfRangePaint, canvas);
                 break;
         }
     }
 
-
+    private void drawLine(float fromX, float fromY, float toX, float toY, Paint paint, Canvas canvas){
+        Path path = new Path();
+        path.moveTo((float) fromX, (float) fromY);
+        path.lineTo((float) toX, (float) toY);
+        canvas.drawPath(path, paint);
+    }
 
 
 }

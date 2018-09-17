@@ -16,16 +16,6 @@ import java.util.Arrays;
  */
 public class GraphBackgroundView extends View {
 
-//    static final float[] graphPoints1 = new float[]{  150, 500 };
-//    static final float[] graphPoints11 = new float[]{  15, 40 };
-//    static final float[] graphPoints111 = new float[]{  1.5f, 4.0f };
-//
-//    static final int[] graphPoints2 = new int[]{ 100, 200, 300, 400 };
-//    static final int[] graphPoints3 = new int[]{ 100, 50, 150, 200, 300, 600, 350 };
-//    static final int[] graphPoints4 = new int[]{ 100, 200, 300, 150, 400, 500, 800, 600 };
-//    static final int[] graphPoints5 = new int[]{ 100, 200, 300, 150, 400, 500, 800, 600 };
-
-
     static final float rangeMinimum1 = 350;
     static final float rangeMaximum1 = 650;
 
@@ -71,14 +61,8 @@ public class GraphBackgroundView extends View {
         drawAxis(canvas,offsetX, offsetY );
 
         // 2. get max value
-//        float maxVal = graphPoints[0];
-//        for(int i = 1; i < graphPoints.length; i++){
-//            if(graphPoints[i] > maxVal){
-//                maxVal = graphPoints[i];
-//            }
-//        }
-
         float maxVal = rangeMaximum * 1.5f;
+
         drawRangeNumbers(canvas, maxVal, offsetX, offsetY);
     }
 
@@ -120,16 +104,13 @@ public class GraphBackgroundView extends View {
         rangePaint.setColor(Color.LTGRAY);
         rangePaint.setAntiAlias(true);
 
-        float minRangeNumber_X = offsetX/2, minRangeNumber_Y = 0;
-        float maxRangeNumber_X = offsetX/2, maxRangeNumber_Y = 0;
-
-        minRangeNumber_Y = graphHeight - (graphHeight/maxval*rangeMinimum - 2*offsetY);
-        maxRangeNumber_Y = graphHeight - (graphHeight/maxval*rangeMaximum - 2*offsetY);
+        float minRangeNumber_X = offsetX/2;
+        float minRangeNumber_Y = graphHeight - (graphHeight/maxval*rangeMinimum - 2*offsetY);
+        float maxRangeNumber_X = offsetX/2;
+        float maxRangeNumber_Y = graphHeight - (graphHeight/maxval*rangeMaximum - 2*offsetY);
 
         canvas.drawRect(offsetX, maxRangeNumber_Y, getWidth()*0.9f, minRangeNumber_Y, rangePaint);
-
         canvas.drawText(String.valueOf(rangeMinimum), minRangeNumber_X, minRangeNumber_Y, textPaint);
-
         canvas.drawText(String.valueOf(rangeMaximum), maxRangeNumber_X, maxRangeNumber_Y, textPaint);
 
     }
