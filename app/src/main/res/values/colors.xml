@@ -3,4 +3,12 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="shcBrightGray">#b6b1a9</color>
+    <color name="White">#FFFFFFFF</color>
+    <color name="shcDarkTeal">#00505c</color>
+    <color name="shcRed">#8c1515</color>
+    <color name="shcPrimaryGray">#4d4f53</color>
+    <color name="shcTeal">#007c92</color>
+    <color name="shcGray">#4d4f53</color>
+    <color name="shcBrick">#8d3a19</color>
 </resources>

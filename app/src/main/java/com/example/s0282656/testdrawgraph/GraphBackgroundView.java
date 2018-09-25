@@ -16,39 +16,16 @@ import java.util.Arrays;
  */
 public class GraphBackgroundView extends View {
 
-    static final float rangeMinimum1 = 350;
-    static final float rangeMaximum1 = 650;
-
-    static final float rangeMinimum2 = 25;
-    static final float rangeMaximum2 = 60;
-
-//    float[] graphPoints = null;
-    float rangeMinimum;
-    float rangeMaximum;
-
-
     public GraphBackgroundView(Context context) {
         super(context);
-        init();
     }
 
     public GraphBackgroundView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
     }
 
     public GraphBackgroundView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init();
-    }
-
-    private void init(){
-
-        rangeMinimum = rangeMinimum1;
-        rangeMaximum = rangeMaximum1;
-
-//        rangeMinimum = rangeMinimum2;
-//        rangeMaximum = rangeMaximum2;
     }
 
     @Override
@@ -59,11 +36,7 @@ public class GraphBackgroundView extends View {
         float offsetX = getWidth()*0.15f;
         float offsetY = getHeight()*0.1f;
         drawAxis(canvas,offsetX, offsetY );
-
-        // 2. get max value
-        float maxVal = rangeMaximum * 1.5f;
-
-        drawRangeNumbers(canvas, maxVal, offsetX, offsetY);
+        drawRangeNumbers(canvas, offsetX, offsetY);
     }
 
     private void drawAxis(Canvas canvas,float offsetX, float offsetY ){
@@ -81,16 +54,16 @@ public class GraphBackgroundView extends View {
         canvas.drawPath(pathY, axisPaint);
 
         pathX.moveTo(offsetX, getHeight() - offsetY);
-        pathX.lineTo(getWidth() - offsetX, getHeight() - offsetY);
+        pathX.lineTo(getWidth() , getHeight() - offsetY);
         canvas.drawPath(pathX, axisPaint);
 
 
     }
 
-    private void drawRangeNumbers(Canvas canvas, float maxval, float offsetX, float offsetY){
+    private void drawRangeNumbers(Canvas canvas, float offsetX, float offsetY){
 
         float graphHeight = getHeight()*0.9f - 2*offsetY; // point values range
-
+        float maxVal = GraphCalculator.getInstance().getTopCutoffValue();
 
         Paint textPaint = new Paint();
         textPaint.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -105,14 +78,15 @@ public class GraphBackgroundView extends View {
         rangePaint.setAntiAlias(true);
 
         float minRangeNumber_X = offsetX/2;
-        float minRangeNumber_Y = graphHeight - (graphHeight/maxval*rangeMinimum - 2*offsetY);
+        float minRangeNumber_Y = graphHeight - (graphHeight/maxVal*GraphCalculator.getInstance().getRangeMinimum() - 2*offsetY);
         float maxRangeNumber_X = offsetX/2;
-        float maxRangeNumber_Y = graphHeight - (graphHeight/maxval*rangeMaximum - 2*offsetY);
+        float maxRangeNumber_Y = graphHeight - (graphHeight/maxVal*GraphCalculator.getInstance().getRangeMaximum() - 2*offsetY);
 
-        canvas.drawRect(offsetX, maxRangeNumber_Y, getWidth()*0.9f, minRangeNumber_Y, rangePaint);
-        canvas.drawText(String.valueOf(rangeMinimum), minRangeNumber_X, minRangeNumber_Y, textPaint);
-        canvas.drawText(String.valueOf(rangeMaximum), maxRangeNumber_X, maxRangeNumber_Y, textPaint);
-
+        if(GraphCalculator.getInstance().isDrawRangeRect()) {
+            canvas.drawRect(offsetX, maxRangeNumber_Y, getWidth(), minRangeNumber_Y, rangePaint);
+        }
+        canvas.drawText(String.valueOf(GraphCalculator.getInstance().getOriginalRangeMinimum()), minRangeNumber_X, minRangeNumber_Y, textPaint);
+        canvas.drawText(String.valueOf(GraphCalculator.getInstance().getOriginalRangeMaximum()), maxRangeNumber_X, maxRangeNumber_Y, textPaint);
     }
 
 }
