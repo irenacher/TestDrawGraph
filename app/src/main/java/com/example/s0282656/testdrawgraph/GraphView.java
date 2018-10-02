@@ -8,6 +8,7 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -53,7 +54,8 @@ public class GraphView extends View {
         float offsetX = getWidth()*0.20f;
         float offsetY = getHeight()*0.1f;
         float graphWidth = getWidth()*0.9f - offsetX;  // days range
-        float graphHeight = getHeight()*0.9f - 2*offsetY; // point values range
+//        float graphHeight = getHeight()*0.9f - 2*offsetY; // point values range
+        float graphHeight = getHeight() - offsetY; // point values range
 
         canvas.save();
          // flip Y coords on canvas to have 0,0 in the bottom left corner of the canvas
@@ -74,7 +76,6 @@ public class GraphView extends View {
 
         float pointX;
         float pointY;
-        float radius = 25;
 
         ArrayList<GraphPoint> allGraphPoints = GraphCalculator.getInstance().getAllGraphPoints();
         float rangeMinimum = GraphCalculator.getInstance().getRangeMinimum();
@@ -88,14 +89,16 @@ public class GraphView extends View {
 
             pointX = (graphWidth/resultsNum)*count + offsetX;
             pointY = (graphHeight/maxvalue)*currentPoint.getPointValue() + offsetY;
+            Paint pointPaint = currentPoint.getPaint();
+            pointPaint.setStrokeWidth(dpToPixels(3, getContext()));
 
             if(count == 0) {
-                canvas.drawCircle(pointX, pointY, currentPoint.getRadius(), currentPoint.getPaint());
+                canvas.drawCircle(pointX, pointY, dpToPixels( currentPoint.getRadius(), getContext()), pointPaint);
                 currentPoint.setPointCenter(new PointF(pointX, pointY));
                 previousPoint = currentPoint;
 
             } else {
-                canvas.drawCircle(pointX, pointY, currentPoint.getRadius(), currentPoint.getPaint());
+                canvas.drawCircle(pointX, pointY,  dpToPixels( currentPoint.getRadius(), getContext()), pointPaint);
                 currentPoint.setPointCenter(new PointF(pointX, pointY));
                 PathRangeType type = PathRangeType.Unknown;
 
@@ -119,14 +122,14 @@ public class GraphView extends View {
                     type = PathRangeType.BothOutOfRangeDifferentSidesDescending;
                 }
 
-                calculateAnddrawLine(previousPoint.getPointCenter().x, previousPoint.getPointCenter().y, pointX, pointY, radius, type, canvas);
+                calculateAnddrawLine(previousPoint.getPointCenter().x, previousPoint.getPointCenter().y, pointX, pointY, previousPoint.getRadius(), currentPoint.getRadius(), type, canvas);
                 previousPoint = currentPoint;
             }
             count++;
         }
     }
 
-    private void calculateAnddrawLine(float fromX, float fromY, float toX, float toY, float radius, PathRangeType type, Canvas canvas ) {
+    private void calculateAnddrawLine(float fromX, float fromY, float toX, float toY, float fromRadius, float toRadius, PathRangeType type, Canvas canvas ) {
         float deltaX = toX - fromX;
         float deltaY = toY - fromY;
         double fromY_start = 0, fromX_start = 0;
@@ -137,25 +140,26 @@ public class GraphView extends View {
         float rotation = 0;
 
         float offsetY = getHeight()*0.1f;
-        float graphHeight = getHeight()*0.9f - 2*offsetY;
+//        float graphHeight = getHeight()*0.9f - 2*offsetY;
+        float graphHeight = getHeight() - offsetY;
 
         if(fromY < toY){ // ascending
             rotation = (float) Math.atan2( deltaY,deltaX);
             rotation = (float) Math.toRadians(Math.toDegrees(rotation));
 
-            fromY_start = fromY + radius * Math.sin(rotation);
-            fromX_start = fromX + radius * Math.cos(rotation);
-            toY_end = toY - radius * Math.sin(rotation);
-            toX_end = toX - radius * Math.cos(rotation);
+            fromY_start = fromY + dpToPixels(fromRadius, getContext()) * Math.sin(rotation);
+            fromX_start = fromX + dpToPixels(fromRadius, getContext()) * Math.cos(rotation);
+            toY_end = toY - dpToPixels(toRadius, getContext()) * Math.sin(rotation);
+            toX_end = toX - dpToPixels(toRadius, getContext()) * Math.cos(rotation);
 
         } else{ // descending
             rotation = (float) -Math.atan2(deltaX,deltaY);
             rotation = (float) Math.toRadians(Math.toDegrees(rotation) + 180);
 
-            fromY_start = fromY - radius * Math.cos(rotation);
-            fromX_start = fromX + radius * Math.sin(rotation);
-            toY_end = toY + radius * Math.cos(rotation);
-            toX_end = toX - radius * Math.sin(rotation);
+            fromY_start = fromY - dpToPixels(fromRadius, getContext()) * Math.cos(rotation);
+            fromX_start = fromX + dpToPixels(fromRadius, getContext()) * Math.sin(rotation);
+            toY_end = toY + dpToPixels(toRadius, getContext()) * Math.cos(rotation);
+            toX_end = toX - dpToPixels(toRadius, getContext()) * Math.sin(rotation);
         }
 
         // now draw connecting line
@@ -163,13 +167,13 @@ public class GraphView extends View {
         outOfRangePaint.setStyle(Paint.Style.STROKE);
         outOfRangePaint.setAntiAlias(true);
         outOfRangePaint.setColor(Color.parseColor("#8c1515"));
-        outOfRangePaint.setStrokeWidth(10);
+        outOfRangePaint.setStrokeWidth(dpToPixels(3, getContext()));
 
         Paint inRangePaint = new Paint();
         inRangePaint.setStyle(Paint.Style.STROKE);
         inRangePaint.setAntiAlias(true);
         inRangePaint.setColor(Color.BLACK);
-        inRangePaint.setStrokeWidth(10);
+        inRangePaint.setStrokeWidth(dpToPixels(3, getContext()));
 
         float rangeMinimum = GraphCalculator.getInstance().getRangeMinimum();
         float rangeMaximum = GraphCalculator.getInstance().getRangeMaximum();
@@ -296,16 +300,16 @@ public class GraphView extends View {
     private void drawDetailsRectForZoomedPoint(Canvas canvas){
 
 
-        float rectWidth = 400;
+        float rectWidth = dpToPixels(150, getContext());
         float left;
         if(zoomedPoint.getPointCenter().x - rectWidth/2 < getWidth()*0.15f){
-            left = getWidth()*0.15f + 10;
+            left = getWidth()*0.15f + dpToPixels(10, getContext());
         } else {
             left = zoomedPoint.getPointCenter().x - rectWidth / 2;
         }
-        float top = getHeight() - (zoomedPoint.getPointCenter().y - zoomedPoint.getRadius() - 30);
+        float top = getHeight() - (zoomedPoint.getPointCenter().y - dpToPixels(zoomedPoint.getRadius(), getContext()) - dpToPixels(30,getContext()));
         float right = left + rectWidth;
-        float bottom = top + 200;
+        float bottom = top + dpToPixels(70, getContext());
         float rectHeight = bottom - top;
 
         Paint paint = new Paint();
@@ -315,36 +319,40 @@ public class GraphView extends View {
         // FILL details rect
         canvas.drawRect(left, top, right, bottom, paint);
 
-        paint.setStrokeWidth(3);
+        paint.setStrokeWidth(dpToPixels(2, getContext()));
+//        paint.setStrokeWidth(3);
         paint.setColor(Color.parseColor("#8c1515"));
         paint.setStyle(Paint.Style.STROKE);
         // draw BORDER around details rect
         canvas.drawRect(left, top, right, bottom, paint);
 
-        // draw pointy triangle to the circle center
+        // draw white triangle from the circle center to the rect overlapping it by 5 pixels in Y-direction
         Paint trianglePaint = new Paint();
         trianglePaint.setColor(Color.WHITE);
         trianglePaint.setStyle(Paint.Style.FILL);
+
         Path trianglePath = new Path();
         trianglePath.moveTo(left + rectWidth/3, top +5);
         trianglePath.lineTo(zoomedPoint.getPointCenter().x, getHeight() - zoomedPoint.getPointCenter().y);
-        trianglePath.lineTo(left + rectWidth/3 + 25, top +5);
+        trianglePath.lineTo(left + rectWidth/3 + 30, top +5);
         trianglePath.lineTo(left + rectWidth/3, top +5);
+
+//        trianglePath.lineTo(left + rectWidth/3 + dpToPixels(30, getContext()), top +dpToPixels(5, getContext()));
+//        trianglePath.lineTo(left + rectWidth/3, top +dpToPixels(5, getContext()));
         trianglePath.close();
         canvas.drawPath(trianglePath, trianglePaint);
 
+        // draw pointy border around white triangle to the top of the rect
         Paint arrowPaint = new Paint();
-
         arrowPaint.setStyle(Paint.Style.STROKE);
-        arrowPaint.setStrokeWidth(4);
+        arrowPaint.setStrokeWidth(dpToPixels(2, getContext()));
         arrowPaint.setColor(Color.parseColor("#8c1515"));
         arrowPaint.setAntiAlias(true);
 
         Path arrowPath = new Path();
         arrowPath.moveTo(left + rectWidth/3, top);
         arrowPath.lineTo(zoomedPoint.getPointCenter().x, getHeight() - zoomedPoint.getPointCenter().y);
-        arrowPath.moveTo(zoomedPoint.getPointCenter().x, getHeight() - zoomedPoint.getPointCenter().y);
-        arrowPath.lineTo(left + rectWidth/3 + 25, top);
+        arrowPath.lineTo(left + rectWidth/3 + 30, top);
         canvas.drawPath(arrowPath, arrowPaint);
 
         // draw point value in the details rect
@@ -354,11 +362,11 @@ public class GraphView extends View {
         valuePaint.setTextAlign(Paint.Align.CENTER);
 
         valuePaint.setColor(Color.RED);
-        valuePaint.setTextSize(40);
-        valuePaint.setStrokeWidth(4);
+        valuePaint.setTextSize(getContext().getResources().getDimensionPixelSize(R.dimen.drawableTextLarge));
+        valuePaint.setStrokeWidth(dpToPixels(3, getContext()));
 
         String text = String.valueOf(zoomedPoint.getPointValue()) + " mmol/L";
-        canvas.drawText(text, left + rectWidth/2 , top +rectHeight/2 - 30 ,valuePaint);
+        canvas.drawText(text, left + rectWidth/2 , top +rectHeight/2 - 10 ,valuePaint);
 
         Paint datePaint = new Paint();
         datePaint.setAntiAlias(true);
@@ -366,10 +374,15 @@ public class GraphView extends View {
         datePaint.setTextAlign(Paint.Align.CENTER);
 
         datePaint.setColor(Color.BLACK);
-        datePaint.setTextSize(30);
-        datePaint.setStrokeWidth(2);
+        datePaint.setTextSize(getContext().getResources().getDimensionPixelSize(R.dimen.drawableTextMedium));
+        datePaint.setStrokeWidth(dpToPixels(2, getContext()));
         String date = "9/17/2018, 4:35 PM";
-        canvas.drawText(date, left + rectWidth/2 , top +rectHeight/2  + 30,datePaint);
+        canvas.drawText(date, left + rectWidth/2 , top +rectHeight/2  + 15,datePaint);
+    }
+
+    private int dpToPixels(float dp, Context context) {
+        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+        return px;
     }
 
 }

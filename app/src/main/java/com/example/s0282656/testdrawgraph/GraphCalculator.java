@@ -1,7 +1,9 @@
 package com.example.s0282656.testdrawgraph;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.TypedValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,8 +20,8 @@ public class GraphCalculator {
     private float originalDataMinimum, originalDataMaximum;
     private float rangeMinimum, rangeMaximum;
     private boolean drawRangeRect = true;
-    float regularRadius = 25;
-    float zoomedReadius = 35;
+    float regularRadius = 10;
+    float zoomedReadius = 20;
 
     ArrayList<GraphPoint> allGraphPoints = new ArrayList<>();
 
@@ -88,7 +90,7 @@ public class GraphCalculator {
                 pointData = data[i];
             }
 
-            if(pointData >= rangeMinimum && pointData <= rangeMaximum ){
+            if(pointData > rangeMinimum && pointData < rangeMaximum ){
                 point = new GraphPoint(pointData, regularRadius, inRangePaint);
             } else {
                 point = new GraphPoint(pointData, regularRadius, outOfRangePaint);
@@ -124,7 +126,8 @@ public class GraphCalculator {
     }
 
     public boolean isDrawRangeRect() {
-        return drawRangeRect;
+//        return drawRangeRect;
+        return true;
     }
 
     public float getRegularRadius() {

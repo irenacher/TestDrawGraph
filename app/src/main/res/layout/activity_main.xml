@@ -19,14 +19,19 @@
             android:layout_weight=".2"
             android:layout_marginBottom="40dp"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="40dp"
+        android:paddingBottom="40dp">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight=".6"
-            android:paddingTop="40dp"
-            android:paddingBottom="40dp"
             android:id="@+id/graph_layout"
-            android:visibility="visible">
+            android:visibility="visible"
+            android:layout_marginTop="50dp">
 
             <com.example.s0282656.testdrawgraph.GraphBackgroundView
                 android:layout_width="match_parent"
@@ -40,46 +45,62 @@
                 android:visibility="visible"/>
         </RelativeLayout>
 
-
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight=".6"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
-            android:orientation="vertical"
-            android:id="@+id/circleview_layout"
-            android:visibility="gone">
+            android:padding = "10dp"
+            android:text= "Standard Range Legend"
+            android:textSize="18sp" />
 
-            <com.example.s0282656.testdrawgraph.CircleView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/circleview"/>
-
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:orientation="horizontal"
-            android:weightSum="2"
-            android:layout_weight=".2"
-            android:layout_alignParentBottom="true">
+            android:layout_height="wrap_content"
+            android:padding = "10dp"
+            android:text= "Outside Range Legend"
+            android:textSize="18sp" />
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id = "@+id/graph_button"
-                android:layout_weight="1"
-                android:text = "Graph"
-                android:textSize="20sp"/>
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id = "@+id/circle_button"
-                android:layout_weight="1"
-                android:text = "Circle"
-                android:textSize="20sp"/>
-        </LinearLayout>
+    </LinearLayout>
+
+
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight=".6"-->
+            <!--android:paddingTop="20dp"-->
+            <!--android:paddingBottom="20dp"-->
+            <!--android:orientation="vertical"-->
+            <!--android:id="@+id/circleview_layout"-->
+            <!--android:visibility="gone">-->
+
+            <!--<com.example.s0282656.testdrawgraph.CircleView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:id="@+id/circleview"/>-->
+
+        <!--</LinearLayout>-->
+
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="50dp"-->
+            <!--android:orientation="horizontal"-->
+            <!--android:weightSum="2"-->
+            <!--android:layout_weight=".2"-->
+            <!--android:layout_alignParentBottom="true">-->
+
+            <!--<Button-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id = "@+id/graph_button"-->
+                <!--android:layout_weight="1"-->
+                <!--android:text = "Graph"-->
+                <!--android:textSize="20sp"/>-->
+            <!--<Button-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id = "@+id/circle_button"-->
+                <!--android:layout_weight="1"-->
+                <!--android:text = "Circle"-->
+                <!--android:textSize="20sp"/>-->
+        <!--</LinearLayout>-->
 
 </RelativeLayout>

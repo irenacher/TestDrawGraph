@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="drawableTextLarge">20sp</dimen>
+    <dimen name="drawableTextMedium">10sp</dimen>
+</resources>
